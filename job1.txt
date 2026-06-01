@@ -1,0 +1,5 @@
+Title: Backend Engineer
+
+We are looking for a Backend Engineer with experience in Python, FastAPI, and PostgreSQL.
+Responsibilities include building REST APIs, managing databases, and writing clean maintainable code.
+Requirements: 2+ years of experience, strong knowledge of Python, familiarity with Docker and CI/CD pipelines.

@@ -1,0 +1,5 @@
+Title: Data Scientist
+
+We are hiring a Data Scientist to join our AI team.
+Responsibilities include building ML models, analyzing large datasets, and presenting insights to stakeholders.
+Requirements: Experience with Python, scikit-learn, pandas, and SQL. Knowledge of deep learning frameworks is a plus.

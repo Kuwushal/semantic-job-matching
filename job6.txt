@@ -1,0 +1,5 @@
+Title: Cloud Architect
+
+We are seeking a Cloud Architect to design and oversee our cloud infrastructure strategy.
+Responsibilities include architecting scalable AWS solutions, defining best practices, and leading cloud migrations.
+Requirements: Deep expertise in AWS services, Terraform, networking, security, and cost optimization. AWS certifications preferred.

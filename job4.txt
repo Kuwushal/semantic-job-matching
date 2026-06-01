@@ -1,0 +1,5 @@
+Title: Machine Learning Engineer
+
+We are looking for a Machine Learning Engineer to build and deploy ML models at scale.
+Responsibilities include designing ML pipelines, training models, and integrating them into production systems.
+Requirements: Strong Python skills, experience with TensorFlow or PyTorch, familiarity with MLOps tools, and cloud platforms like AWS or GCP.

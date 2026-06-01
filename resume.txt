@@ -1,0 +1,28 @@
+Name: Alex Johnson
+Email: alex.johnson@email.com
+Phone: 555-0100
+
+Summary:
+Experienced software engineer with 4 years of experience building backend systems and APIs.
+
+Skills:
+Python, FastAPI, Django, PostgreSQL, MySQL, Docker, AWS, Git, REST APIs, SQL
+
+Work Experience:
+Software Engineer — TechCorp Inc. (2021 - Present, 3 years)
+- Built and maintained REST APIs using FastAPI and Django
+- Managed PostgreSQL databases and wrote complex SQL queries
+- Deployed services on AWS using Docker and CI/CD pipelines
+
+Junior Developer — Startup XYZ (2020 - 2021, 1 year)
+- Developed backend features in Python
+- Worked with MySQL databases
+- Collaborated with frontend team on API integration
+
+Projects:
+- E-commerce Platform: Built a full backend for an online store with payment integration
+- Task Management App: Developed a REST API for a task manager with user authentication
+- Data Pipeline: Created an ETL pipeline to process and store large datasets
+
+Education:
+BSc Computer Science — University of Technology, 2020

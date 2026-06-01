@@ -1,0 +1,5 @@
+Title: Full Stack Engineer
+
+We are hiring a Full Stack Engineer to work on both frontend and backend systems.
+Responsibilities include building React UIs, developing REST APIs, and managing cloud deployments.
+Requirements: Experience with React, Node.js or Python, PostgreSQL, Docker, and AWS. Strong communication skills required.

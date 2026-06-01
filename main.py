@@ -4,6 +4,13 @@ from uuid import uuid4
 from typing import Optional, List
 import pdfplumber
 import docx
+from database import SessionLocal, Jobmodel, ResumeModel, init_db
+import json
+from embeddings import embed_and_store_job, embed_and_store_resume, search_jobs
+from llm import extract_resume_data, rerank_jobs
+
+
+
 
 app = FastAPI(title="Semantic Job Matching API")
 
@@ -13,7 +20,8 @@ app = FastAPI(title="Semantic Job Matching API")
 # -------------------------
 
 
-jobs_store = {}
+init_db()
+
 
 @app.get("/health")
 def health_check():
@@ -74,43 +82,55 @@ async def create_job(
     elif not description:
         raise HTTPException(status_code=400, detail="Either file or description must be provided")
 
-    job_id = str(uuid4())
-    jobs_store[job_id] = {
-        "id": job_id,
-        "title": title,
-        "description": description,
-    }
+    db = SessionLocal()
+    job = Jobmodel(id=str(uuid4()), title=title, description=description)
+    db.add(job)
+    db.commit()
+    db.refresh(job)
+    db.close()
+    embed_and_store_job(job.id, description)
 
-    return jobs_store[job_id]
+    return {"id": job.id, "title": job.title, "description": job.description}
+
 
 @app.get("/jobs")
 def list_jobs():
-    return [
-        {"id": job["id"], "title": job["title"]}
-        for job in jobs_store.values()
-    ]
+        db = SessionLocal()
+        jobs = db.query(Jobmodel).all()
+        db.close()
+        return [{"id": job.id, "title": job.title, "description": job.description} for job in jobs]
 
 @app.get("/jobs/{job_id}")
 def get_job(job_id: str):
-    job = jobs_store.get(job_id)
-    if not job:
-        raise HTTPException(status_code=404, detail="Job not found")
-    return job
+        db = SessionLocal()
+        job = db.query(Jobmodel).filter(Jobmodel.id == job_id).first()
+        db.close()
+        if not job:
+            raise HTTPException(status_code=404, detail="Job not found")
+        return {"id": job.id, "title": job.title, "description": job.description}
+
+
+
 
 @app.delete("/jobs/{job_id}")
 def delete_job(job_id: str):
-    if job_id not in jobs_store:
+    db = SessionLocal()
+    job = db.query(Jobmodel).filter(Jobmodel.id == job_id).first()
+    if not job:
+        db.close()
         raise HTTPException(status_code=404, detail="Job not found")
-    del jobs_store[job_id]
+    db.delete(job)
+    db.commit()
+    db.close()
     return {"message": "Job deleted successfully"}
+
+
 
 
 
 # -------------------------
 # RESUMES STORE AND MODELS
 # -------------------------
-
-resumes_store = {}
 
 class WorkExperience(BaseModel):
     company: str
@@ -155,32 +175,58 @@ async def upload_resume(file: UploadFile = File(...)):
     if not text:
         raise HTTPException(status_code=400, detail="Failed to extract text or empty file")
 
-    structured_data = mock_llm_extract(text)
+    structured_data = extract_resume_data(text)
 
     resume_id = str(uuid4())
-    resumes_store[resume_id] = {
-        "id": resume_id,
-        "raw_text": text,
-        "structured_data": structured_data.dict()
-    }
+    db = SessionLocal()
+    resume = ResumeModel(id=resume_id, raw_text=text, structured_data=json.dumps(structured_data.dict()))
+    db.add(resume)
+    db.commit()
+    db.close()
+    embed_and_store_resume(resume_id, text)
 
     return {"id": resume_id, "structured_data": structured_data}
 
 
-@app.get("/resume/{resume_id}")
+
+@app.get("/resumes/{resume_id}")
 def get_resume(resume_id: str):
-    resume = resumes_store.get(resume_id)
+    db = SessionLocal()
+    resume = db.query(ResumeModel).filter(ResumeModel.id == resume_id).first()
+    db.close()
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
-    return resume
+    return{"id": resume.id, "raw_text": resume.raw_text, "structured_data": json.loads(resume.structured_data)}
+
+
+@app.post("/resumes/{resume_id}/match")
+def match_resume_to_jobs(resume_id: str):
+    db = SessionLocal()
+    resume = db.query(ResumeModel).filter(ResumeModel.id == resume_id).first()
+    if not resume:
+        db.close()
+        raise HTTPException(status_code=404, detail="Resume not found")
+    results = search_jobs(resume.raw_text)
+
+    job_ids = list(set(
+        meta["job_id"] for meta in results["metadatas"][0]
+    ))
+
+    jobs = db.query(Jobmodel).filter(Jobmodel.id.in_(job_ids)).all()
+    db.close()
+    
+    jobs_list = [{"id": j.id, "title": j.title, "description": j.description} for j in jobs]
+    ranked = rerank_jobs(resume.raw_text, jobs_list)
+
+    jobs_map = {j["id"]: j["title"] for j in jobs_list}
+    valid_matches = []
+    for match in ranked:
+        job_id = match.get("job_id", "")
+        if job_id and job_id in jobs_map:
+            match["title"] = jobs_map[job_id]
+            valid_matches.append(match)
+
+    return {"resume_id": resume_id, "matches": valid_matches}
 
 
 
-
-# -------------------------
-# HEALTH CHECK
-# -------------------------
-
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}

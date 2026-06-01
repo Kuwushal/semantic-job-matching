@@ -1,0 +1,28 @@
+Name: Marcus Chen
+Email: marcus.chen@email.com
+Phone: 555-0300
+
+Summary:
+DevOps Engineer with 5 years of experience managing cloud infrastructure, CI/CD pipelines, and containerized deployments.
+
+Skills:
+AWS, Terraform, Docker, Kubernetes, Jenkins, GitHub Actions, Bash, Python, Linux, Ansible, Prometheus, Grafana
+
+Work Experience:
+Senior DevOps Engineer — CloudOps Inc. (2021 - Present, 3 years)
+- Managed AWS infrastructure using Terraform and CloudFormation
+- Built and maintained CI/CD pipelines using Jenkins and GitHub Actions
+- Orchestrated containerized workloads using Kubernetes and Docker
+
+DevOps Engineer — TechBase Ltd. (2019 - 2021, 2 years)
+- Automated server provisioning using Ansible
+- Monitored system health using Prometheus and Grafana
+- Managed Linux servers and wrote Bash automation scripts
+
+Projects:
+- Zero Downtime Deployment: Implemented blue-green deployment strategy on AWS ECS
+- Infrastructure as Code: Migrated all infrastructure to Terraform modules
+- Monitoring Stack: Set up full observability stack with Prometheus, Grafana, and alerting
+
+Education:
+BSc Information Technology — Tech University, 2019

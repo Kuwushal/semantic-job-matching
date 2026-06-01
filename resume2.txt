@@ -1,0 +1,28 @@
+Name: Sarah Lee
+Email: sarah.lee@email.com
+Phone: 555-0200
+
+Summary:
+Data Scientist with 3 years of experience in machine learning, data analysis, and building predictive models.
+
+Skills:
+Python, scikit-learn, TensorFlow, pandas, NumPy, SQL, Tableau, AWS SageMaker, Git, Jupyter
+
+Work Experience:
+Data Scientist — Analytics Co. (2022 - Present, 2 years)
+- Built and deployed classification and regression models using scikit-learn and TensorFlow
+- Analyzed large datasets using pandas and NumPy
+- Created dashboards and visualizations using Tableau
+
+Data Analyst — Insights Ltd. (2021 - 2022, 1 year)
+- Wrote complex SQL queries to extract and analyze business data
+- Automated reporting pipelines using Python scripts
+
+Projects:
+- Customer Churn Prediction: Built an ML model to predict customer churn with 89% accuracy
+- Sales Forecasting: Developed a time series forecasting model for monthly sales
+- Sentiment Analysis: Built an NLP pipeline to classify customer reviews
+
+Education:
+MSc Data Science — State University, 2021
+BSc Mathematics — City College, 2019

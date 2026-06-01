@@ -1,0 +1,5 @@
+Title: DevOps Engineer
+
+We are looking for a DevOps Engineer to manage our cloud infrastructure.
+Responsibilities include setting up CI/CD pipelines, managing AWS services, and ensuring system reliability.
+Requirements: Experience with AWS, Terraform, Docker, Kubernetes, and Linux. Strong scripting skills in Bash or Python.
