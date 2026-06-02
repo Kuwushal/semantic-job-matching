@@ -39,6 +39,7 @@ def embed_and_store_resume(resume_id:str, text: str):
             documents=[chunk],
             metadatas=[{"resume_id": resume_id, "chunk_id": i}]
         )
+        
 
 def search_jobs(query_text: str, top_k: int = 5):
     embedding = model.encode(query_text).tolist()
