@@ -22,10 +22,10 @@ class ResumeData(BaseModel):
 
 def extract_resume_data(text: str) -> ResumeData:
     prompt = f"""
-Extract structed information from the resume below and return ONLY valid JSON with this exact structure:
+Extract information from the resume below and return ONLY valid JSON with this exact structure:
 {{
     "skills": ["skill1", "skill2"],
-    "projects": ["project1", "project2"],
+    "projects": ["Project Name One", "Project Name Two"],
     "work_experience": [
         {{"company": "Company Name", "role": "Job Title", "duration": "X years"}}
     ],
@@ -33,6 +33,8 @@ Extract structed information from the resume below and return ONLY valid JSON wi
         {{"institution": "University Name", "degree": "Degree Name", "year": "YYYY"}}
     ]
 }}
+
+IMPORTANT: "projects" must be a flat list of strings (just the project name), NOT objects.
 
 Resume:
 {text}
@@ -53,15 +55,25 @@ Return ONLY the JSON, no explanation.
                 text = text[4:]
         return text.strip()
 
+    def normalize(data: dict) -> dict:
+        # flatten projects if LLM returned objects
+        projects = data.get("projects", [])
+        data["projects"] = [
+            p["name"] if isinstance(p, dict) else str(p)
+            for p in projects
+        ]
+        return data
+
     try:
-        return json.loads(clean_json(raw))
-    except json.JSONDecodeError:
-        retry_prompt = f"Return ONLY valid JSON list, no markdown, no explanation:\n{raw}"
+        return ResumeData(**normalize(json.loads(clean_json(raw))))
+    except (json.JSONDecodeError, Exception):
+        retry_prompt = f"Return ONLY valid JSON, no markdown, no explanation:\n{raw}"
         retry_response = ollama.chat(
             model="llama3",
             messages=[{"role": "user", "content": retry_prompt}]
         )
-        return json.loads(clean_json(retry_response["message"]["content"].strip()))
+        return ResumeData(**normalize(json.loads(clean_json(retry_response["message"]["content"].strip()))))
+
 
 
 def rerank_jobs(resume_text: str, jobs: list) -> list:
@@ -71,7 +83,8 @@ def rerank_jobs(resume_text: str, jobs: list) -> list:
     ])
 
     prompt = f"""
-You are a job matching assistant. Given a resume and a list of jobs, rank the jobs from best to worst match and explain why.
+You are a job matching assistant. Given a resume and a list of jobs, rank the jobs from best to worst match and explain why. When writing the reason, always refer to the candidate as "you" instead of using their name.
+
 
 Resume:
 {resume_text[:500]}

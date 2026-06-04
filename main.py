@@ -2,17 +2,27 @@ from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from uuid import uuid4
 from typing import Optional, List
+import secrets
 import pdfplumber
 import docx
 from database import SessionLocal, Jobmodel, ResumeModel, init_db
 import json
 from embeddings import embed_and_store_job, embed_and_store_resume, search_jobs
 from llm import extract_resume_data, rerank_jobs
+from fastapi.middleware.cors import CORSMiddleware
 
 
 
 
 app = FastAPI(title="Semantic Job Matching API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 # -------------------------
@@ -227,6 +237,28 @@ def match_resume_to_jobs(resume_id: str):
             valid_matches.append(match)
 
     return {"resume_id": resume_id, "matches": valid_matches}
+
+ADMIN_USERNAME = "admin"
+ADMIN_PASSWORD = "admin123"
+admin_tokens = set()
+
+class AdminLogin(BaseModel):
+    username: str
+    password: str
+
+@app.post("/admin/login")
+def admin_login(credentials: AdminLogin):
+    if credentials.username != ADMIN_USERNAME and credentials.password != ADMIN_PASSWORD:
+         raise HTTPException(status_code=401, detail="Invalid credentials")
+    token = secrets.token_urlsafe(32)
+    admin_tokens.add(token)
+    return {"token": token}
+   
+@app.post("/admin/logout")
+def admin_logout(token: str):
+    if token in admin_tokens:
+        admin_tokens.remove(token)
+        return {"message": "Logged out successfully"}
 
 
 

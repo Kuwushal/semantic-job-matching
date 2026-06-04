@@ -1,0 +1,9 @@
+TODO - Medium Level Improvements
+
+1. Add logging — log file parsing, embedding, and LLM calls so you can debug issues easily
+
+2. Pagination on GET /jobs — add ?page=1&limit=10 so it doesn't return everything at once
+
+3. Delete resume endpoint — you have delete job but no delete resume
+
+4. Better error handling — wrap LLM calls in try/except and return proper 500 messages instead of crashing
